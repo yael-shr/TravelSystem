@@ -1,0 +1,6 @@
+@TravelSystem_HostAddress = http://localhost:5233
+
+GET {{TravelSystem_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
