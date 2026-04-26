@@ -1,4 +1,6 @@
 using Microsoft.EntityFrameworkCore;
+using TravelSystem.Core.Interfaces;
+using TravelSystem.Services;
 using TravelSystem.Services.Data;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -10,16 +12,23 @@ builder.Services.AddControllers();
 builder.Services.AddOpenApi();
 
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
-
+builder.Services.AddScoped<IStudentRepository, StudentRepository>();
+builder.Services.AddScoped<ITeacherRepository, TeacherRepository>();
+builder.Services.AddScoped<ILocationRepository, LocationRepository>();
+builder.Services.AddScoped<LocationService, LocationService>();
 builder.Services.AddDbContext<TravelDbContext>(options =>
-    options.UseSqlServer(connectionString));
+                 options.UseSqlServer(connectionString));
 
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
+    app.UseSwagger();
+    app.UseSwaggerUI();
 }
 
 app.UseHttpsRedirection();
