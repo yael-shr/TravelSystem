@@ -1,0 +1,11 @@
+<div style="height: 500px; width: 100%;">
+  <google-map height="100%" width="100%" [center]="center" [zoom]="zoom">
+    
+    @for (loc of allStudents(); track $index) {
+      <map-marker [position]="{lat: loc.Latitude, lng: loc.Longitude}"
+                  [title]="loc.Name">
+      </map-marker>
+    }
+
+  </google-map>
+</div>
