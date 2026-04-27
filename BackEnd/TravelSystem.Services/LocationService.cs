@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using TravelSystem.Core.DTOs;
-using TravelSystem.Core.Entities;
-using static TravelSystem.Core.DTOs.LocationUpdateDTO;
+using TravelSystem.DTOs;
+using TravelSystem.Entities;
+using static TravelSystem.DTOs.LocationUpdateDTO;
 
 namespace TravelSystem.Services
 {

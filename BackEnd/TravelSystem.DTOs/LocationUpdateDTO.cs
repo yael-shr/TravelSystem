@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace TravelSystem.Core.DTOs
+namespace TravelSystem.DTOs
 {
     public class LocationUpdateDTO
     {

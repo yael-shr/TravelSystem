@@ -1,7 +1,8 @@
 using Microsoft.EntityFrameworkCore;
-using TravelSystem.Core.Interfaces;
+using TravelSystem.Repositories.Interfaces;
 using TravelSystem.Services;
 using TravelSystem.Services.Data;
+using TravelSystem.Services.Repository;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -45,6 +46,7 @@ if (app.Environment.IsDevelopment())
 app.UseCors("AllowAll");
 app.UseHttpsRedirection();
 
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();

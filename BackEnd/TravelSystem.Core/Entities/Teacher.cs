@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace TravelSystem.Core.Entities
+namespace TravelSystem.Entities
 {
     public class Teacher
     {

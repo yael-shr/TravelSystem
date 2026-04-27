@@ -1,12 +1,12 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using TravelSystem.Core.Entities;
-using TravelSystem.Core.Interfaces;
+using TravelSystem.Entities;
+using TravelSystem.Repositories.Interfaces;
 using TravelSystem.Services;
 
 namespace TravelSystem.Controllers
 {
     [ApiController]
-    [Route("[controller]")]
+    [Route("api/[controller]")]
     public class TeachersController(ITeacherRepository repo) : ControllerBase
     {
             [HttpGet("all")]

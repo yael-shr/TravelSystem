@@ -1,13 +1,13 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using TravelSystem.Core.Entities;
-using TravelSystem.Core.Interfaces;
+using TravelSystem.Entities;
+using TravelSystem.Repositories.Interfaces;
 using TravelSystem.Services;
-using static TravelSystem.Core.DTOs.LocationUpdateDTO;
+using static TravelSystem.DTOs.LocationUpdateDTO;
 
 namespace TravelSystem.Controllers
 {
     [ApiController]
-    [Route("[Controller]")]
+    [Route("api/[Controller]")]
     public class LocationsController(ILocationRepository repo , LocationService service) : ControllerBase
     {
         [HttpGet("id/{id}")]

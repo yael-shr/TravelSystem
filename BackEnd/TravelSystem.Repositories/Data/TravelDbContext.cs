@@ -4,8 +4,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using TravelSystem.Core.Entities;
-using static TravelSystem.Core.Entities.Location;
+using TravelSystem.Entities;
+using static TravelSystem.Entities.Location;
 
 namespace TravelSystem.Services.Data
 {
@@ -16,6 +16,7 @@ namespace TravelSystem.Services.Data
         public DbSet<Student> Students { get; set; }
         public DbSet<Teacher> Teachers { get; set; }
         public DbSet<Location> Locations { get; set; }
+        public DbSet<User> Users { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

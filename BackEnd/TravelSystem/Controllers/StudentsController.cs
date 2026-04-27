@@ -1,12 +1,13 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
-using TravelSystem.Core.Entities;
-using TravelSystem.Core.Interfaces;
+using TravelSystem.Entities;
+using TravelSystem.Repositories.Interfaces;
 
 namespace TravelSystem.Controllers
 {
     [ApiController]
-    [Route("[controller]")]
+    [Route("api/[controller]")]
     public class StudentsController(IStudentRepository repo) : ControllerBase
     {
         [HttpGet("all")]
@@ -34,6 +35,7 @@ namespace TravelSystem.Controllers
             return Ok(sudents);
         }
 
+        [Authorize]
         [HttpPost("add")]
         public async Task<IActionResult> AddStudent([FromBody] Student student)
         {
