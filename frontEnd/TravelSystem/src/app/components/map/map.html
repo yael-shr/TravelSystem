@@ -1,16 +1,19 @@
-<div style="height: 500px; width: 100%;">
-  <google-map height="100%" width="100%" [center]="center" [zoom]="zoom">
+@if (apiLoaded) {
+  <google-map 
+    [center]="center" 
+    [zoom]="zoom" 
+    width="100%" 
+    height="500px">
     
-    @for (loc of allStudents(); track $index) {
-      <map-marker [position]="{lat: loc.Latitude, lng: loc.Longitude}"
-                  [title]="loc.Name"
-                  [label]="{
-        text: loc.personalId,
-        color: 'blue',
-        fontWeight: 'bold',
-        fontSize: '10px'
-      }"></map-marker>
+    @for (s of allStudents(); track s.personalId) {
+      <map-marker
+        [position]="{ lat: s.Latitude, lng: s.Longitude }"
+        [label]="{ text: s.personalId }">
+      </map-marker>
     }
-
   </google-map>
-</div>
+} @else {
+  <div class="loading-map">
+    <p>טוען את המפה  ם...</p>
+  </div>
+}

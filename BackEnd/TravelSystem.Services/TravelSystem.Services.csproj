@@ -16,7 +16,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\TravelSystem.Core\TravelSystem.Entities.csproj" />
     <ProjectReference Include="..\TravelSystem.DTOs\TravelSystem.DTOs.csproj" />
     <ProjectReference Include="..\TravelSystem.Repositories\TravelSystem.Repositories.csproj" />
   </ItemGroup>

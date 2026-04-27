@@ -16,7 +16,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\TravelSystem.Core\TravelSystem.Entities.csproj" />
+    <ProjectReference Include="..\TravelSystem.Entities\TravelSystem.Entities.csproj" />
   </ItemGroup>
 
 </Project>

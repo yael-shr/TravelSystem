@@ -9,9 +9,9 @@ import { Observable } from 'rxjs';
 export class Teacher {
   private http = inject(HttpClient);
   
-  private teacherUrl = 'https://localhost:7109/Teachers';
-  private studentUrl = 'https://localhost:7109/Students';
-  private locationUrl = 'https://localhost:7109/Locations';
+  private teacherUrl = 'https://localhost:7109/api/Teachers';
+  private studentUrl = 'https://localhost:7109/api/Students';
+  private locationUrl = 'https://localhost:7109/api/Locations';
   constructor() { }
 
   getStudentsByClass(className: string): Observable<any[]> {
