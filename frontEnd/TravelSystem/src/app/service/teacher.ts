@@ -21,7 +21,10 @@ export class Teacher {
   getAllStudents(): Observable<any[]> {
     return this.http.get<any[]>(`${this.studentUrl}/all`);
   }
-
+  
+  getAllLocations(students : any[]): Observable<any[]> {
+    return this.http.post<any[]>(`${this.locationUrl}/all`, students );
+  }
   getLastLocation(studentId: string): Observable<any> {
     return this.http.get<any>(`${this.locationUrl}/id/${studentId}`);
   }

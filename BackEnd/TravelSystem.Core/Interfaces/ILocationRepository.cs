@@ -11,6 +11,7 @@ namespace TravelSystem.Core.Interfaces
     public interface ILocationRepository
     {
         Task<Location> GetLocationAsync(string PersonalId);
-        Task<Location> AddLocationAsync(Location location);
+        public Task UpsertLocationAsync(Location newLocation);
+        Task<List<Location>> GetAllLocation(List<Student> students);
     }
 }

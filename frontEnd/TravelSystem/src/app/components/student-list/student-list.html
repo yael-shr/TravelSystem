@@ -1,0 +1,11 @@
+<div class="list-container">
+  <h3>רשימת תלמידות</h3>
+  <ul>
+    @for (s of students(); track s.personalId) {
+      <li>
+        <strong>{{ s.fullName }}</strong> - כיתה {{ s.classGroup }} 
+        (ת"ז: {{ s.personalId }})
+      </li>
+    }
+  </ul>
+</div>

@@ -9,9 +9,8 @@ import { GoogleMapsModule, MapMarker } from '@angular/google-maps';
   styleUrl: './map.css'
 })
 export class Map {
-  // השורה הזו יוצרת את ה"כניסה" לנתונים מהאבא
   allStudents = input<any[]>([]); 
   
-  center: google.maps.LatLngLiteral = { lat: 31.7683, lng: 35.2137 };
-  zoom = 15;
+  center: google.maps.LatLngLiteral = { lat: 32.066, lng: 34.8222 };
+  zoom = 13;
 }

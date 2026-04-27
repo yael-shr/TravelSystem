@@ -1,20 +1,19 @@
 import { Component, inject, OnInit, signal } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { Map } from './components/map/map';
-import { Teacher } from './service/teacher'; // ודאי שהנתיב ל-Service נכון
+import { StudentList } from './components/student-list/student-list';
+import { Teacher } from './service/teacher'; 
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [Map],
+  imports: [Map, StudentList],
   templateUrl: './app.html',
   styleUrl: './app.css'
 })
 export class App implements OnInit {
-  // 1. הגדרת ה-Signal שחסר (כאן הייתה השגיאה!)
   allStudents = signal<any[]>([]);
-
-  // 2. הזרקת ה-Service
+  allLocations = signal<any[]>([]);
   private teacherService = inject(Teacher);
 
   ngOnInit() {
@@ -22,9 +21,22 @@ export class App implements OnInit {
   }
 
   loadData() {
-    // 3. משיכת הנתונים מה-C# ועדכון ה-Signal
-    this.teacherService.getAllStudents().subscribe((data: any[]) => {
-      this.allStudents.set(data);
+  this.teacherService.getAllStudents().subscribe((students: any[]) => {
+    this.teacherService.getAllLocations(students).subscribe((locations: any[]) => {
+      
+      const enrichedStudents = students.map(student => {
+        const loc = locations.find(l => l.personalId === student.personalId || l.PersonalId === student.personalId);
+        
+        return {
+          ...student,
+          Latitude: loc?.latitude || loc?.Latitude,
+          Longitude: loc?.longitude || loc?.Longitude
+        };
+      });
+
+      console.log("All Students with Locations:", enrichedStudents);
+      this.allStudents.set(enrichedStudents);
     });
-  }
+  });
+}
 }

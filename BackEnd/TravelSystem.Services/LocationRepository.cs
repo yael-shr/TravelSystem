@@ -12,11 +12,24 @@ namespace TravelSystem.Services
 {
     public class LocationRepository(TravelDbContext repo) : ILocationRepository
     {
-        public async Task<Location> AddLocationAsync(Location location)
+     
+        public async Task UpsertLocationAsync(Location newLocation)
         {
-            await repo.Locations.AddAsync(location);
+            var existingLocation = await repo.Locations
+                .FirstOrDefaultAsync(l => l.PersonalId == newLocation.PersonalId);
+
+            if (existingLocation != null)
+            {
+                existingLocation.Latitude = newLocation.Latitude;
+                existingLocation.Longitude = newLocation.Longitude;
+                existingLocation.Timestamp = newLocation.Timestamp;
+            }
+            else
+            {
+                await repo.Locations.AddAsync(newLocation);
+            }
+
             await repo.SaveChangesAsync();
-            return location;
         }
 
         public async Task<Location> GetLocationAsync(string PersonalId)
@@ -25,6 +38,15 @@ namespace TravelSystem.Services
             .OrderByDescending(l => l.Timestamp) 
             .FirstOrDefaultAsync();
              return l;
+        }
+
+        public async Task<List<Location>> GetAllLocation(List<Student> students)
+        {
+            var studentIds = students.Select(s => s.PersonalId).ToList();
+
+            return await repo.Locations
+                .Where(l => studentIds.Contains(l.PersonalId))
+                .ToListAsync();
         }
     }
 }

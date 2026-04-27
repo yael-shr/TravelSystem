@@ -3,8 +3,13 @@
     
     @for (loc of allStudents(); track $index) {
       <map-marker [position]="{lat: loc.Latitude, lng: loc.Longitude}"
-                  [title]="loc.Name">
-      </map-marker>
+                  [title]="loc.Name"
+                  [label]="{
+        text: loc.personalId,
+        color: 'blue',
+        fontWeight: 'bold',
+        fontSize: '10px'
+      }"></map-marker>
     }
 
   </google-map>
