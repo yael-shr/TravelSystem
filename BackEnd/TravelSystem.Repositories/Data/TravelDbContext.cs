@@ -16,7 +16,7 @@ namespace TravelSystem.Services.Data
         public DbSet<Student> Students { get; set; }
         public DbSet<Teacher> Teachers { get; set; }
         public DbSet<Location> Locations { get; set; }
-        public DbSet<User> Users { get; set; }
+       
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

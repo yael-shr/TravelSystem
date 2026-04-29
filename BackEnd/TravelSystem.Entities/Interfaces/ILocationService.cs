@@ -1,12 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿
+using TravelSystem.DTOs;
+using static TravelSystem.DTOs.LocationUpdateDTO;
 
 namespace TravelSystem.Entities.Interfaces
 {
-    internal interface ILocationService
+    public interface ILocationService
     {
+        Task<Location> GetLocationByIdAsync(string id);
+        Task UpdateLocationAsync(StudentLocationUpdateDTO dto);
+        Task<List<Location>> GetAllLocationsAsync(List<Student> students);
+
     }
 }
