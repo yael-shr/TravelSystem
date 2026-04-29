@@ -1,0 +1,73 @@
+<div class="form-wrapper">
+  <div class="form-container">
+    <div class="form-header">
+      <h2>הוספת תלמידה חדשה</h2>
+      <p>כיתה מנהלת: {{ studentData.classGroup }}</p>
+    </div>
+
+    <form (ngSubmit)="saveStudent()" #studentForm="ngForm">
+      
+      <!-- שם מלא -->
+      <div class="input-group">
+        <label for="fullName">שם מלא:</label>
+        <input 
+          type="text" 
+          id="fullName" 
+          name="fullName" 
+          [(ngModel)]="studentData.fullName" 
+          required 
+          placeholder="הזיני שם ושם משפחה">
+      </div>
+
+      <!-- תעודת זהות -->
+      <div class="input-group">
+        <label for="personalId">מספר זיהוי (ת"ז):</label>
+        <input 
+          type="text" 
+          id="personalId" 
+          name="personalId" 
+          [(ngModel)]="studentData.personalId" 
+          required 
+          placeholder="הזיני  מספר זהות...">
+      </div>
+
+      <!-- כיתה - מוצג כטקסט בלבד כי זה נלקח מהמורה -->
+      <div class="input-group">
+        <label>כיתה:</label>
+        <input 
+          type="text" 
+          name="classGroup" 
+          [ngModel]="studentData.classGroup" 
+          readonly 
+          class="readonly-input">
+      </div>
+
+<!-- קטע הקואורדינטות המעודכן בטופס -->
+<div class="location-inputs">
+  <h4>נתוני מיכון (DMS)</h4>
+  
+  <div class="input-row">
+    <label>קו רוחב:</label>
+    <input [(ngModel)]="locationData.geoCoordinates.latitude.degrees" name="latD" placeholder="מעלות">
+    <input [(ngModel)]="locationData.geoCoordinates.latitude.minutes" name="latM" placeholder="דקות">
+    <input [(ngModel)]="locationData.geoCoordinates.latitude.seconds" name="latS" placeholder="שניות">
+  </div>
+
+  <div class="input-row">
+    <label>קו אורך:</label>
+    <input [(ngModel)]="locationData.geoCoordinates.longitude.degrees" name="lngD" placeholder="מעלות">
+    <input [(ngModel)]="locationData.geoCoordinates.longitude.minutes" name="lngM" placeholder="דקות">
+    <input [(ngModel)]="locationData.geoCoordinates.longitude.seconds" name="lngS" placeholder="שניות">
+  </div>
+</div>
+
+      <div class="form-actions">
+        <button type="submit" class="submit-btn" [disabled]="!studentForm.valid">
+          שמירת תלמידה במערכת
+        </button>
+        <button type="button" class="cancel-btn" (click)="goBack()">ביטול</button>
+      </div>
+
+    </form>
+  </div>
+</div>

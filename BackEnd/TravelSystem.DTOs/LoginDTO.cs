@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace TravelSystem.DTOs
 {
-    public class LoginDTO
+    public record LoginDTO
     {
         public string Id { get; set; }
         public string Password { get; set; }

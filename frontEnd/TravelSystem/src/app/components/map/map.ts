@@ -1,37 +1,143 @@
-import { Component, input , OnInit } from '@angular/core';
-import { GoogleMapsModule, MapMarker } from '@angular/google-maps';
+import { Component, OnInit, OnDestroy, inject, signal, computed } from '@angular/core';
+import { interval, Subscription } from 'rxjs';
+import { GoogleMapsModule } from '@angular/google-maps';
 import { environment } from '../../../environments/environments';
+import { ActivatedRoute, Router } from '@angular/router';
+import { Teacher } from '../../service/teacher';
 
 @Component({
   selector: 'app-map',
   standalone: true,
-  imports: [GoogleMapsModule, MapMarker],
+  imports: [GoogleMapsModule], 
   templateUrl: './map.html',
   styleUrl: './map.css'
 })
-export class Map implements OnInit {
-  allStudents = input<any[]>([]); 
-  apiLoaded = false;
-  center: any = { lat: 32.066, lng: 34.8222 };  zoom = 13;
+export class Map implements OnInit, OnDestroy {
+  private route = inject(ActivatedRoute);
+  private router = inject(Router);
+  private teacherService = inject(Teacher);
+  private refreshSubscription?: Subscription;
 
-   ngOnInit() {
-     this.loadGoogleMapsApi();
-  
+  apiLoaded = signal(false); 
+  userRole = signal<string | null>(null);
+  selectedStudentId = signal<string | null>(null);
+  teacherClass = signal<string | null>(null);
+  currentStudent = signal<any | null>(null);
+
+  // סיגנל מקומי לקומפוננטה - הוא יכיל רק את מה שצריך להציג עכשיו
+  displayStudents = signal<any[]>([]); 
+
+  center: google.maps.LatLngLiteral = { lat: 32.066, lng: 34.8222 };
+  zoom = 13;
+
+  // חישוב המרקרים יתבסס על displayStudents
+  filteredStudents = computed(() => this.displayStudents());
+
+  ngOnInit() {
+    this.route.queryParams.subscribe(params => {
+      const role = params['role'];
+      const id = params['id'];
+      
+      this.userRole.set(role);
+      this.selectedStudentId.set(id);
+      this.displayStudents.set([]); // ניקוי תצוגה ראשוני
+
+      // הפעלה ראשונה מידית של הטעינה
+      this.refreshLocationsFromServer();
+
+      // הפעלת רענון אוטומטי לכל סוגי המשתמשים (מורה והורה)
+      if (this.refreshSubscription) {
+        this.refreshSubscription.unsubscribe();
+      }
+      this.refreshSubscription = interval(30000).subscribe(() => {
+        this.refreshLocationsFromServer(); // קריאה לפונקציה שמושכת נתונים מה-API[cite: 1, 2]
+      });
+    });
+
+    this.loadGoogleMapsApi();
+  }
+
+  refreshLocationsFromServer() {
+    const currentRole = this.userRole();
+    const currentId = this.selectedStudentId();
+    const currentClass = this.teacherClass();
+
+    if (!currentRole || !currentId) return;
+
+    console.log('מתבצע סנכרון אוטומטי מול השרת...');
+
+    if (currentRole === 'teacher') {
+      // 1. קודם מוודאים שיש לנו את הכיתה של המורה (אם עדיין לא נשמרה בסיגנל)
+      this.teacherService.getTeachersById(currentId).subscribe((teacher: any) => {
+        const teacherData = Array.isArray(teacher) ? teacher[0] : teacher;
+        const className = teacherData?.classGroup || teacherData?.class;
+        this.teacherClass.set(className);
+
+        if (className) {
+          // 2. משיכת רשימת התלמידות והמיקומים המעודכנים מהשרת
+          this.teacherService.getStudentsByClass(className).subscribe(students => {
+            this.teacherService.getAllLocations(students).subscribe(locations => {
+              const enriched = students.map(s => {
+                const loc = locations.find(l => l.personalId === s.personalId || l.PersonalId === s.personalId);
+                return {
+                  ...s,
+                  latitude: loc ? Number(loc.latitude || loc.Latitude) : null,
+                  longitude: loc ? Number(loc.longitude || loc.Longitude) : null
+                };
+              });
+              // עדכון ה-Signal יגרום למפה להשתנות אוטומטית ללא רענון דף
+              this.displayStudents.set(enriched.filter(s => s.latitude && s.longitude));
+            });
+          });
+        }
+      });
+    } 
+    else if (currentRole === 'parent') {
+      // סנכרון עבור הורה - משיכת נתוני תלמידה בודדת מהשרת
+      this.teacherService.getStudentsById(currentId).subscribe(student => {
+        const studentData = Array.isArray(student) ? student[0] : student;
+        this.currentStudent.set(studentData);
+        this.teacherService.getAllLocations([studentData]).subscribe(locations => {
+          const loc = locations[0];
+          const updatedStudent = {
+            ...studentData,
+            latitude: loc ? Number(loc.latitude || loc.Latitude) : null,
+            longitude: loc ? Number(loc.longitude || loc.Longitude) : null
+          };
+          this.displayStudents.set([updatedStudent]);
+        });
+      });
     }
+  }
+
+  addStudent() {
+    console.log('מנווט לדף הוספת תלמידה...');
+    this.router.navigate(['/add-student'], { 
+      queryParams: { 
+        class: this.teacherClass(), 
+        role: 'teacher',
+        id: this.selectedStudentId() // חשוב לשמור על ה-ID ב-URL עבור ה-goBack
+      } 
+    });
+  }
+
   loadGoogleMapsApi() {
-    // בודקים אם ה-API כבר נטען כדי למנוע טעינות כפולות
     if (window.google && window.google.maps) {
-       this.apiLoaded = true;
-      return;}
+      this.apiLoaded.set(true);
+      return;
+    }
     const script = document.createElement('script');
-    // כאן אנחנו משתמשים במפתח מהסביבה!
     script.src = `https://maps.googleapis.com/maps/api/js?key=${environment.googleMapsApiKey}`;
     script.async = true;
     script.defer = true;
-    script.onload = () => {
-      this.apiLoaded = true;
-    };
+    script.onload = () => { this.apiLoaded.set(true); };
     document.head.appendChild(script);
   }
 
+  ngOnDestroy() {
+    // מניעת דליפות זיכרון וביטול הרענון ביציאה מהמסך[cite: 2]
+    if (this.refreshSubscription) {
+      this.refreshSubscription.unsubscribe();
+    }
+  }
 }

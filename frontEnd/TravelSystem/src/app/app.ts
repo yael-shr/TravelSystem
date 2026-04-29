@@ -1,19 +1,15 @@
 import { Component, inject, OnInit, signal } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
-import { Map } from './components/map/map';
-import { StudentList } from './components/student-list/student-list';
 import { Teacher } from './service/teacher'; 
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [Map, StudentList],
+  imports: [RouterOutlet], // השארנו רק את ה-Outlet!
   templateUrl: './app.html',
   styleUrl: './app.css'
 })
 export class App implements OnInit {
-  allStudents = signal<any[]>([]);
-  allLocations = signal<any[]>([]);
   private teacherService = inject(Teacher);
 
   ngOnInit() {
@@ -21,22 +17,21 @@ export class App implements OnInit {
   }
 
   loadData() {
-  this.teacherService.getAllStudents().subscribe((students: any[]) => {
-    this.teacherService.getAllLocations(students).subscribe((locations: any[]) => {
-      
-      const enrichedStudents = students.map(student => {
-        const loc = locations.find(l => l.personalId === student.personalId || l.PersonalId === student.personalId);
-        
-        return {
-          ...student,
-          Latitude: loc?.latitude || loc?.Latitude,
-          Longitude: loc?.longitude || loc?.Longitude
-        };
+    // טוענים את הנתונים לתוך ה-Service כדי שהמפה תוכל לגשת אליהם מכל מקום
+    this.teacherService.getAllStudents().subscribe((students: any[]) => {
+      this.teacherService.getAllLocations(students).subscribe((locations: any[]) => {
+        const enrichedStudents = students.map(student => {
+          const loc = locations.find(l => l.personalId === student.personalId || l.PersonalId === student.personalId);
+          return {
+            ...student,
+            // Google Maps מצפה ל-lat ו-lng באותיות קטנות
+            latitude: loc?.latitude || loc?.Latitude,
+            longitude: loc?.longitude || loc?.Longitude
+          };
+        });
+        // עדכון הסיגנל ב-Service (צריך להוסיף אותו ב-teacher.ts)
+        this.teacherService.studentsSignal.set(enrichedStudents);
       });
-
-      console.log("All Students with Locations:", enrichedStudents);
-      this.allStudents.set(enrichedStudents);
     });
-  });
-}
+  }
 }

@@ -1,19 +1,76 @@
-@if (apiLoaded) {
-  <google-map 
-    [center]="center" 
-    [zoom]="zoom" 
-    width="100%" 
-    height="500px">
-    
-    @for (s of allStudents(); track s.personalId) {
-      <map-marker
-        [position]="{ lat: s.Latitude, lng: s.Longitude }"
-        [label]="{ text: s.personalId }">
-      </map-marker>
-    }
-  </google-map>
-} @else {
-  <div class="loading-map">
-    <p>טוען את המפה  ם...</p>
-  </div>
+<div class="dashboard-container">
+  <div class="map-section">
+    @if (apiLoaded()) {
+      <google-map [center]="center" [zoom]="zoom" height="100%" width="100%">
+        @for (student of filteredStudents(); track student.personalId) {
+  @if (student.latitude && student.longitude) {
+    <map-marker
+      [position]="{ lat: student.latitude, lng: student.longitude }"
+      [title]="student.fullName"
+      [label]="{ text: student.personalId?.toString() || '', color: 'blue', fontWeight: 'bold' }" 
+    ></map-marker>
+  }
 }
+      </google-map>
+    }
+  </div>
+
+  <div class="info-section">
+    @if (userRole() === 'teacher') {
+      <div class="teacher-panel">
+        <div class="panel-header">
+          <h2>ניהול כיתה {{ teacherClass() }}</h2>
+          <!-- הכפתור שחזר למסך -->
+          <button class="add-btn" (click)="addStudent()">
+            <i class="fa-solid fa-plus"></i> הוספת תלמידה
+          </button>
+        </div>
+        
+        <p class="summary">תלמידות מוצגות: {{ filteredStudents().length }}</p>
+        
+        <div class="student-list-container">
+          <table class="styled-table">
+            <thead>
+              <tr>
+                <th>שם מלא</th>
+                <th>ת"ז</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (s of filteredStudents(); track s.personalId) {
+                <tr>
+                  <td>{{ s.fullName }}</td>
+                  <td>{{ s.personalId }}</td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      </div>
+    }
+    @else if (userRole() === 'parent') {
+      <div class="details-card">
+        <h2>פרטי תלמידה</h2>
+        @if (currentStudent()) {
+          <div class="student-details">
+            <p class="label">שם מלא:</p>
+            <p class="value">{{ currentStudent().fullName }}</p>
+            
+            <p class="label">כיתה:</p>
+            <p class="value">{{ currentStudent().classGroup }}</p>
+            
+            <p class="label">מספר זיהוי:</p>
+            <p class="value">{{ currentStudent().personalId }}</p>
+            
+            <div class="status-box">
+              <span class="pulse"></span> המיקום מעודכן במפה
+            </div>
+          </div>
+        } @else {
+          <p>טוען נתוני תלמידה מהשרת...</p>
+        }
+      </div>
+    }
+
+  </div>
+</div>

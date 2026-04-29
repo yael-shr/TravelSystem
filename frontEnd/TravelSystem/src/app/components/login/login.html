@@ -1,0 +1,17 @@
+<div class="login-wrapper">
+  <h2>כניסה למערכת TravelSystem</h2>
+  
+  <div class="input-group">
+    <label>מספר זהות:</label>
+    <input type="text" name="idNumber" [(ngModel)]="idNumber" placeholder="הקלידי תז...">
+ </div>
+
+  <div class="actions">
+    <button (click)="onLogin('teacher')">כניסת מורה</button>
+    <button (click)="onLogin('parent')">כניסת הורה</button>
+  </div>
+
+  @if (errorMessage) {
+    <p class="error">{{ errorMessage }}</p>
+  }
+</div>

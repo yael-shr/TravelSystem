@@ -2,25 +2,25 @@
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
 using TravelSystem.Entities;
-using TravelSystem.Repositories.Interfaces;
+using TravelSystem.Entities.Interfaces;
 
 namespace TravelSystem.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    public class StudentsController(IStudentRepository repo) : ControllerBase
+    public class StudentsController(IStudentService service) : ControllerBase
     {
         [HttpGet("all")]
         public async Task<IActionResult> GetAllStudents()
         {
-            var students = await repo.GetAllAsync();
+            var students = await service.GetAllStudentsAsync();
             return  Ok(students);  
         }
 
         [HttpGet("id/{id}")]
         public async Task<IActionResult> GetStudentById(string id)
         {
-            var student = await repo.GetByIdAsync(id);
+            var student = await service.GetStudentByIdAsync(id);
             if (student == null)
                 return NotFound();
             return Ok(student);
@@ -29,19 +29,18 @@ namespace TravelSystem.Controllers
         [HttpGet("group/{group}")]
         public async Task<IActionResult> GetStudentByGroup(string group)
         {
-            var sudents = await repo.GetByClassAsync(group);
+            var sudents = await service.GetStudentsByGroupAsync(group);
             if (sudents == null)
                 return NotFound();
             return Ok(sudents);
         }
 
-        [Authorize]
+      
         [HttpPost("add")]
         public async Task<IActionResult> AddStudent([FromBody] Student student)
         {
             if (student == null) return BadRequest();
-
-            await repo.AddStudentAsync(student);
+            await service.AddStudentAsync(student);
             return CreatedAtAction(nameof(GetStudentById), new { id = student.PersonalId }, student);
         }
 
