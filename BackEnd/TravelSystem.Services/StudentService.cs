@@ -14,8 +14,14 @@ namespace TravelSystem.Services
 
         public async Task AddStudentAsync(Student student)
         {
-            // כאן אפשר להוסיף לוגיקה עסקית (למשל: בדיקת גיל, תקינות ת"ז וכו')
-            await repo.AddStudentAsync(student);
+            var students = await repo.GetByIdAsync(student.PersonalId);
+            if (students == null)
+            {
+                await repo.AddStudentAsync(student);
+            }
+            else {
+
+            }
         }
     }
 }

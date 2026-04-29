@@ -7,7 +7,6 @@
 
     <form (ngSubmit)="saveStudent()" #studentForm="ngForm">
       
-      <!-- שם מלא -->
       <div class="input-group">
         <label for="fullName">שם מלא:</label>
         <input 
@@ -19,7 +18,6 @@
           placeholder="הזיני שם ושם משפחה">
       </div>
 
-      <!-- תעודת זהות -->
       <div class="input-group">
         <label for="personalId">מספר זיהוי (ת"ז):</label>
         <input 
@@ -31,7 +29,6 @@
           placeholder="הזיני  מספר זהות...">
       </div>
 
-      <!-- כיתה - מוצג כטקסט בלבד כי זה נלקח מהמורה -->
       <div class="input-group">
         <label>כיתה:</label>
         <input 
@@ -42,9 +39,8 @@
           class="readonly-input">
       </div>
 
-<!-- קטע הקואורדינטות המעודכן בטופס -->
 <div class="location-inputs">
-  <h4>נתוני מיכון (DMS)</h4>
+  <h4>נתוני מיקום</h4>
   
   <div class="input-row">
     <label>קו רוחב:</label>

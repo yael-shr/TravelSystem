@@ -19,13 +19,6 @@ namespace TravelSystem.Services
         public async Task<IEnumerable<Teacher>> GetAllTeachersAsync() => await repo.GetAllAsync();
         public async Task<Teacher> GetTeacherByIdAsync(string id) => await repo.GetByIdAsync(id);
 
-        //public async Task<Teacher> ValidatUser(LoginDTO user)
-        //{
-        //   var teacher = await repo.GetByIdAsync(user.Id);
-        //    if (teacher == null)
-        //        return null;
 
-
-        //}
     }
 }

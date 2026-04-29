@@ -27,7 +27,6 @@ export class LoginComponent {
   }
 
   if (role === 'teacher') {
-    // בדיקה במאגר המורות
     this.teacherService.getAllTeachers().subscribe((teachers: any[]) => {
       const isExist = teachers.some(t => t.personalId === this.idNumber || t.PersonalId === this.idNumber);
       
@@ -56,5 +55,10 @@ private navigateToMap(role: string) {
   this.router.navigate(['/map'], {
     queryParams: { role: role, id: this.idNumber }
   });
+}
+
+
+goToTeacherRegister() {
+  this.router.navigate(['/register-teacher']);
 }
 }

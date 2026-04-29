@@ -3,7 +3,6 @@ import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Teacher } from '../../service/teacher';
-import { Student } from '../../models/student.model';
 import { StudentLocationUpdate } from '../../models/location.model';
 
 @Component({
@@ -18,14 +17,12 @@ export class AddStudent implements OnInit {
   private route = inject(ActivatedRoute);
   private router = inject(Router);
 
-  // שימוש במודל Student שהגדרת
   studentData: any = {
     personalId: '',
     fullName: '',
     classGroup: ''
   };
 
-  // שימוש במבנה של StudentLocationUpdate מהמודל שלך
   locationData: StudentLocationUpdate = {
     id: '',
     geoCoordinates: {
@@ -44,11 +41,9 @@ export class AddStudent implements OnInit {
   }
 
   saveStudent() {
-    // עדכון ה-ID במיקום שיהיה זהה לתלמידה
     this.locationData.id = this.studentData.personalId;
     this.locationData.timestamp = new Date().toISOString();
 
-    // שמירת תלמידה ולאחר מכן עדכון מיקום דרך ה-Service
     this.teacherService.registerStudent(this.studentData).subscribe({
       next: () => {
         this.teacherService.updateLocation(this.locationData).subscribe({

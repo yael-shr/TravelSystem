@@ -1,0 +1,26 @@
+<div class="form-wrapper">
+  <div class="form-container">
+    <h2>רישום מורה חדשה</h2>
+    <form (ngSubmit)="saveTeacher()" #teacherForm="ngForm">
+      <div class="input-group">
+        <label>שם מלא:</label>
+        <input type="text" name="fullName" [(ngModel)]="teacherData.fullName" required placeholder="הזיני שם מלא">
+      </div>
+
+      <div class="input-group">
+        <label>תעודת זהות:</label>
+        <input type="text" name="personalId" [(ngModel)]="teacherData.personalId" required placeholder="הזיני ת.ז">
+      </div>
+
+      <div class="input-group">
+        <label>כיתה (למשל: ו1):</label>
+        <input type="text" name="classGroup" [(ngModel)]="teacherData.classGroup" required placeholder="הזיני כיתה">
+      </div>
+
+      <div class="form-actions">
+        <button type="submit" [disabled]="!teacherForm.valid" class="submit-btn">סיום והרשמה</button>
+        <button type="button" (click)="goBack()" class="cancel-btn">ביטול</button>
+      </div>
+    </form>
+  </div>
+</div>

@@ -24,13 +24,11 @@ export class Map implements OnInit, OnDestroy {
   teacherClass = signal<string | null>(null);
   currentStudent = signal<any | null>(null);
 
-  // סיגנל מקומי לקומפוננטה - הוא יכיל רק את מה שצריך להציג עכשיו
   displayStudents = signal<any[]>([]); 
 
   center: google.maps.LatLngLiteral = { lat: 32.066, lng: 34.8222 };
   zoom = 13;
 
-  // חישוב המרקרים יתבסס על displayStudents
   filteredStudents = computed(() => this.displayStudents());
 
   ngOnInit() {
@@ -40,17 +38,14 @@ export class Map implements OnInit, OnDestroy {
       
       this.userRole.set(role);
       this.selectedStudentId.set(id);
-      this.displayStudents.set([]); // ניקוי תצוגה ראשוני
-
-      // הפעלה ראשונה מידית של הטעינה
+      this.displayStudents.set([]); 
       this.refreshLocationsFromServer();
 
-      // הפעלת רענון אוטומטי לכל סוגי המשתמשים (מורה והורה)
       if (this.refreshSubscription) {
         this.refreshSubscription.unsubscribe();
       }
       this.refreshSubscription = interval(30000).subscribe(() => {
-        this.refreshLocationsFromServer(); // קריאה לפונקציה שמושכת נתונים מה-API[cite: 1, 2]
+        this.refreshLocationsFromServer(); 
       });
     });
 
@@ -67,14 +62,12 @@ export class Map implements OnInit, OnDestroy {
     console.log('מתבצע סנכרון אוטומטי מול השרת...');
 
     if (currentRole === 'teacher') {
-      // 1. קודם מוודאים שיש לנו את הכיתה של המורה (אם עדיין לא נשמרה בסיגנל)
       this.teacherService.getTeachersById(currentId).subscribe((teacher: any) => {
         const teacherData = Array.isArray(teacher) ? teacher[0] : teacher;
         const className = teacherData?.classGroup || teacherData?.class;
         this.teacherClass.set(className);
 
         if (className) {
-          // 2. משיכת רשימת התלמידות והמיקומים המעודכנים מהשרת
           this.teacherService.getStudentsByClass(className).subscribe(students => {
             this.teacherService.getAllLocations(students).subscribe(locations => {
               const enriched = students.map(s => {
@@ -85,7 +78,6 @@ export class Map implements OnInit, OnDestroy {
                   longitude: loc ? Number(loc.longitude || loc.Longitude) : null
                 };
               });
-              // עדכון ה-Signal יגרום למפה להשתנות אוטומטית ללא רענון דף
               this.displayStudents.set(enriched.filter(s => s.latitude && s.longitude));
             });
           });
@@ -93,7 +85,6 @@ export class Map implements OnInit, OnDestroy {
       });
     } 
     else if (currentRole === 'parent') {
-      // סנכרון עבור הורה - משיכת נתוני תלמידה בודדת מהשרת
       this.teacherService.getStudentsById(currentId).subscribe(student => {
         const studentData = Array.isArray(student) ? student[0] : student;
         this.currentStudent.set(studentData);
@@ -116,7 +107,7 @@ export class Map implements OnInit, OnDestroy {
       queryParams: { 
         class: this.teacherClass(), 
         role: 'teacher',
-        id: this.selectedStudentId() // חשוב לשמור על ה-ID ב-URL עבור ה-goBack
+        id: this.selectedStudentId() 
       } 
     });
   }
@@ -135,7 +126,6 @@ export class Map implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
-    // מניעת דליפות זיכרון וביטול הרענון ביציאה מהמסך[cite: 2]
     if (this.refreshSubscription) {
       this.refreshSubscription.unsubscribe();
     }
