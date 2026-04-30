@@ -45,7 +45,7 @@ export class Map implements OnInit, OnDestroy {
       if (this.refreshSubscription) {
         this.refreshSubscription.unsubscribe();
       }
-      this.refreshSubscription = interval(3000).subscribe(() => {
+      this.refreshSubscription = interval(30000).subscribe(() => {
         this.refreshLocationsFromServer(); 
       });
     });
@@ -58,8 +58,6 @@ export class Map implements OnInit, OnDestroy {
     const teacherLat = position.coords.latitude;
     const teacherLon = position.coords.longitude;
 
-    // 1. ניקוי רשימת האזהרות הישנה לפני בדיקה חדשה
-    // או לחילופין: ניהול רשימה חכמה שלא מוסיפה כפילויות
     let newAlerts: string[] = [];
 
     this.displayStudents().forEach(student => {
@@ -74,12 +72,10 @@ export class Map implements OnInit, OnDestroy {
       }
     });
 
-    // 2. עדכון ה-Signal עם הרשימה העדכנית בלבד (זה ימחק הודעות ישנות ויוסיף חדשות)
     this.alerts.set(newAlerts);
   });
 }
 
-  // נוסחת Haversine לחישוב מרחק במטרים
   calculateDistance(lat1: number, lon1: number, lat2: number, lon2: number): number {
     const R = 6371000; // רדיוס כדור הארץ במטרים
     const dLat = (lat2 - lat1) * Math.PI / 180;
@@ -96,7 +92,6 @@ export class Map implements OnInit, OnDestroy {
   const msg = `אזהרה: ${name} רחוקה (${(distance/1000).toFixed(1)} ק"מ)`;
   this.alerts.update(prev => [...prev, msg]);
   
-  // הסרת ההתראה אחרי 10 שניות כדי לא להעמיס
   setTimeout(() => {
     this.alerts.update(prev => prev.filter(m => m !== msg));
   }, 10000);
