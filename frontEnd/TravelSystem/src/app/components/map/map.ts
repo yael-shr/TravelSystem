@@ -23,6 +23,7 @@ export class Map implements OnInit, OnDestroy {
   selectedStudentId = signal<string | null>(null);
   teacherClass = signal<string | null>(null);
   currentStudent = signal<any | null>(null);
+  alerts = signal<string[]>([]);
 
   displayStudents = signal<any[]>([]); 
 
@@ -44,13 +45,62 @@ export class Map implements OnInit, OnDestroy {
       if (this.refreshSubscription) {
         this.refreshSubscription.unsubscribe();
       }
-      this.refreshSubscription = interval(30000).subscribe(() => {
+      this.refreshSubscription = interval(3000).subscribe(() => {
         this.refreshLocationsFromServer(); 
       });
     });
 
     this.loadGoogleMapsApi();
   }
+
+ checkStudentsLocation() {
+  navigator.geolocation.getCurrentPosition((position) => {
+    const teacherLat = position.coords.latitude;
+    const teacherLon = position.coords.longitude;
+
+    // 1. ניקוי רשימת האזהרות הישנה לפני בדיקה חדשה
+    // או לחילופין: ניהול רשימה חכמה שלא מוסיפה כפילויות
+    let newAlerts: string[] = [];
+
+    this.displayStudents().forEach(student => {
+      const distance = this.calculateDistance(
+        teacherLat, teacherLon, 
+        student.latitude, student.longitude
+      );
+
+      if (distance > 500) {
+        const msg = `אזהרה: ${student.fullName} רחוקה (${(distance/1000).toFixed(1)} ק"מ)`;
+        newAlerts.push(msg);
+      }
+    });
+
+    // 2. עדכון ה-Signal עם הרשימה העדכנית בלבד (זה ימחק הודעות ישנות ויוסיף חדשות)
+    this.alerts.set(newAlerts);
+  });
+}
+
+  // נוסחת Haversine לחישוב מרחק במטרים
+  calculateDistance(lat1: number, lon1: number, lat2: number, lon2: number): number {
+    const R = 6371000; // רדיוס כדור הארץ במטרים
+    const dLat = (lat2 - lat1) * Math.PI / 180;
+    const dLon = (lon2 - lon1) * Math.PI / 180;
+    const a = 
+      Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+      Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) * 
+      Math.sin(dLon / 2) * Math.sin(dLon / 2);
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    return R * c;
+  }
+
+  showAlert(name: string, distance: number) {
+  const msg = `אזהרה: ${name} רחוקה (${(distance/1000).toFixed(1)} ק"מ)`;
+  this.alerts.update(prev => [...prev, msg]);
+  
+  // הסרת ההתראה אחרי 10 שניות כדי לא להעמיס
+  setTimeout(() => {
+    this.alerts.update(prev => prev.filter(m => m !== msg));
+  }, 10000);
+}
 
   refreshLocationsFromServer() {
     const currentRole = this.userRole();
@@ -99,6 +149,9 @@ export class Map implements OnInit, OnDestroy {
         });
       });
     }
+    if (this.userRole() === 'teacher') {
+  this.checkStudentsLocation();
+   }  
   }
 
   addStudent() {

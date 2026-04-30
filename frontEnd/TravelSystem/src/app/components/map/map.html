@@ -13,8 +13,13 @@
 }
       </google-map>
     }
+    @for (alert of alerts(); track alert) {
+  <div style="background: #ffcccc; color: #cc0000; padding: 10px; margin-bottom: 5px; border: 1px solid red; border-radius: 5px; font-weight: bold;">
+    {{ alert }}
   </div>
-
+}
+  </div>
+ 
   <div class="info-section">
     @if (userRole() === 'teacher') {
       <div class="teacher-panel">
